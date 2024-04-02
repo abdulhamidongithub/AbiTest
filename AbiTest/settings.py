@@ -28,10 +28,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'drf_yasg',
 
-    'userapp',
-    'results',
-    'questions',
-    'payments',
+    'api',
 ]
 
 MIDDLEWARE = [
@@ -117,4 +114,4 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-AUTH_USER_MODEL = 'userapp.Candidate'
+AUTH_USER_MODEL = 'api.Candidate'
