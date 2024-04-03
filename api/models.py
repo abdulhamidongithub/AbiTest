@@ -51,6 +51,7 @@ class UserTest(models.Model):
     num_of_questions = models.PositiveSmallIntegerField()
     correct_answers = models.PositiveSmallIntegerField()
     point = models.FloatField()
+    is_certified = models.BooleanField(default=False)
     taken_at = models.DateTimeField(auto_now_add=True)
 
 class Result(models.Model):
