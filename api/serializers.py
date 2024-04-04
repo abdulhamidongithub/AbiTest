@@ -30,6 +30,13 @@ class QuestionSerializer(serializers.ModelSerializer):
         model = Question
         fields = '__all__'
 
+    def to_representation(self, instance):
+        instance = super(QuestionSerializer, self).to_representation(instance)
+        answers = Answer.objects.filter(question = instance)
+        serializer = AnswerSerializer(answers, many=True)
+        instance.update({"answers": serializer.data})
+        return instance
+
 class AnswerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Answer

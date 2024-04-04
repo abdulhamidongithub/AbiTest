@@ -18,3 +18,8 @@ class SubjectTests(APIView):
         serializer = TestSerializer(tests, many=True)
         return Response(serializer.data)
 
+class TestQuestions(APIView):
+    def get(self, request, pk):
+        questions = Question.objects.filter(test__id=pk)
+        serializer = QuestionSerializer(questions, many=True)
+        return Response(serializer.data)
