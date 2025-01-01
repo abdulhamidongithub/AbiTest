@@ -4,7 +4,7 @@ from django.contrib.auth.models import AbstractUser
 class Candidate(AbstractUser):
     phone = models.CharField(max_length=30)
     age = models.PositiveSmallIntegerField()
-    balance = models.PositiveSmallIntegerField(default=0)
+    balance = models.PositiveIntegerField(default=0)
     active = models.BooleanField(default=True)
     region = models.CharField(max_length=30)
     email = None
@@ -14,29 +14,36 @@ class Candidate(AbstractUser):
 
 class Subject(models.Model):
     name = models.CharField(max_length=30)
+    is_mandatory = models.BooleanField(default=False)
     description = models.CharField(max_length=150)
+
+    def __str__(self):
+        return self.name
+
+class Author(models.Model):
+    name = models.CharField(max_length=50)
+    degree = models.CharField(max_length=30, blank=True, null=True)
+    birth_date = models.DateField(blank=True, null=True)
+    photo = models.FileField(null=True, blank=True)
 
     def __str__(self):
         return self.name
 
 class Test(models.Model):
     subject = models.ForeignKey(Subject, on_delete=models.SET_NULL, null=True)
-    author = models.CharField(max_length=50, blank=True, null=True)
+    author = models.ForeignKey(Author, on_delete=models.SET_NULL, null=True)
 
 class Question(models.Model):
     text = models.TextField()
     test = models.ForeignKey(Test, on_delete=models.SET_NULL, null=True)
+    correct_one = models.TextField()
+    option1 = models.TextField()
+    option2 = models.TextField()
+    option3 = models.TextField()
 
     def __str__(self):
         return self.text
 
-class Answer(models.Model):
-    text = models.TextField()
-    is_correct = models.BooleanField(default=False)
-    question = models.ForeignKey(Question, on_delete=models.SET_NULL, null=True)
-
-    def __str__(self):
-        return f"{self.text} --> {self.is_correct}"
 
 class UserTest(models.Model):
     test = models.ForeignKey(Test, on_delete=models.SET_NULL, null=True)
@@ -50,5 +57,4 @@ class UserTest(models.Model):
 class Result(models.Model):
     user_tests = models.ManyToManyField(UserTest)
     overall = models.FloatField()
-
 
