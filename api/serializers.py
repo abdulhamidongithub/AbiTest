@@ -1,14 +1,47 @@
 from rest_framework import serializers
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework import status
 
 from .models import (
     Candidate,
     Subject,
     Test,
     Question,
-    Answer,
     UserTest,
     Result
 )
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    username = serializers.CharField()
+    password = serializers.CharField()
+
+    def validate(self, attrs):
+        username = attrs.get('username')
+        password = attrs.get('password')
+
+        user = Candidate.objects.filter(username=username, password=password).first()
+        if user is None:
+            raise serializers.ValidationError({
+                'success': "false",
+                'message': 'User not found'
+            }, code=status.HTTP_400_BAD_REQUEST)
+
+        refresh = RefreshToken.for_user(user)
+        return {
+            'access': str(refresh.access_token),
+            'refresh': str(refresh),
+            "id": user.id,
+            "username": username,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "phone": user.phone,
+            "birth_date": user.birth_date,
+            "balance": user.balance,
+            "region": user.region,
+            "active": user.active
+        }
+
 
 class CandidateSerializer(serializers.ModelSerializer):
     class Meta:
@@ -30,17 +63,6 @@ class QuestionSerializer(serializers.ModelSerializer):
         model = Question
         fields = '__all__'
 
-    def to_representation(self, instance):
-        instance = super(QuestionSerializer, self).to_representation(instance)
-        answers = Answer.objects.filter(question = instance)
-        serializer = AnswerSerializer(answers, many=True)
-        instance.update({"answers": serializer.data})
-        return instance
-
-class AnswerSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Answer
-        fields = '__all__'
 
 class UserTestSerializer(serializers.ModelSerializer):
     class Meta:

@@ -3,7 +3,7 @@ from django.contrib.auth.models import AbstractUser
 
 class Candidate(AbstractUser):
     phone = models.CharField(max_length=30)
-    age = models.PositiveSmallIntegerField()
+    birth_date = models.DateField(blank=True, null=True)
     balance = models.PositiveIntegerField(default=0)
     active = models.BooleanField(default=True)
     region = models.CharField(max_length=30)
