@@ -2,11 +2,14 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
+from rest_framework_simplejwt.views import TokenObtainPairView
 import random
 
 from .models import *
 from .serializers import *
 
+class MyTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
 
 class SubjectsAPIView(APIView):
     def get(self, request):
