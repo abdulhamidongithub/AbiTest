@@ -20,6 +20,15 @@ class Subject(models.Model):
     def __str__(self):
         return self.name
 
+class Major(models.Model):
+    name = models.CharField(max_length=150)
+    subjects = models.ManyToManyField(Subject)
+    language = models.CharField(max_length=30, default="o'zbek")
+
+    def __str__(self):
+        return self.name
+
+
 class Author(models.Model):
     name = models.CharField(max_length=50)
     degree = models.CharField(max_length=30, blank=True, null=True)
