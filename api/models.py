@@ -15,14 +15,15 @@ class Candidate(AbstractUser):
 class Subject(models.Model):
     name = models.CharField(max_length=30)
     is_mandatory = models.BooleanField(default=False)
-    description = models.CharField(max_length=150)
+    description = models.CharField(max_length=150, blank=True)
 
     def __str__(self):
         return self.name
 
 class Major(models.Model):
     name = models.CharField(max_length=150)
-    subjects = models.ManyToManyField(Subject)
+    main = models.ForeignKey(Subject, on_delete=models.SET_NULL, null=True)
+    secondary = models.ForeignKey(Subject, on_delete=models.SET_NULL, null=True)
     language = models.CharField(max_length=30, default="o'zbek")
 
     def __str__(self):
@@ -34,6 +35,7 @@ class Author(models.Model):
     degree = models.CharField(max_length=30, blank=True, null=True)
     birth_date = models.DateField(blank=True, null=True)
     photo = models.FileField(null=True, blank=True)
+    more_info = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return self.name
@@ -44,26 +46,46 @@ class Test(models.Model):
 
 class Question(models.Model):
     text = models.TextField()
-    test = models.ForeignKey(Test, on_delete=models.SET_NULL, null=True)
-    correct_one = models.TextField()
-    option1 = models.TextField()
-    option2 = models.TextField()
-    option3 = models.TextField()
+    test = models.ForeignKey(Test, on_delete=models.CASCADE, related_name="questions")
+    correct_option = models.TextField()
+    options = models.JSONField()
 
     def __str__(self):
         return self.text
 
 
 class UserTest(models.Model):
-    test = models.ForeignKey(Test, on_delete=models.SET_NULL, null=True)
-    candidate = models.ForeignKey(Candidate, on_delete=models.SET_NULL, null=True)
-    num_of_questions = models.PositiveSmallIntegerField()
-    correct_answers = models.PositiveSmallIntegerField()
-    point = models.FloatField()
-    is_certified = models.BooleanField(default=False)
+    candidate = models.ForeignKey(Candidate, on_delete=models.CASCADE, related_name="tests")
+    major = models.ForeignKey(Major, on_delete=models.SET_NULL, null=True)
+    main_test = models.ForeignKey(Test, on_delete=models.SET_NULL, null=True, related_name="main_user_tests")
+    secondary_test = models.ForeignKey(Test, on_delete=models.SET_NULL, null=True, related_name="secondary_user_tests")
+    mandatory_tests = models.ManyToManyField(Test, related_name="mandatory_user_tests")
+
+    main_test_points = models.FloatField(default=0.0)
+    secondary_test_points = models.FloatField(default=0.0)
+    mandatory_points = models.JSONField(default=dict)
+
+    total_points = models.FloatField(default=0.0)
     taken_at = models.DateTimeField(auto_now_add=True)
 
-class Result(models.Model):
-    user_tests = models.ManyToManyField(UserTest)
-    overall = models.FloatField()
+    def calculate_total_points(self):
+        """Calculate total points from main, secondary, and mandatory tests."""
+        mandatory_total = sum(self.mandatory_points.values())
+        self.total_points = self.main_test_points + self.secondary_test_points + mandatory_total
+        self.save()
+
+    def __str__(self):
+        return f"UserTest: {self.candidate.username} - {self.major.name} ({self.total_points} points)"
+
+
+class UserAnswer(models.Model):
+    user_test = models.ForeignKey(UserTest, on_delete=models.CASCADE, related_name="answers")
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    test = models.ForeignKey(Test, on_delete=models.CASCADE, related_name="answers")
+    answer = models.TextField(blank=True, null=True)
+    is_correct = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Answer by {self.user_test.candidate.username} for {self.question.text}"
+
 
