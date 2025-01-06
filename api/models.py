@@ -19,6 +19,9 @@ class Subject(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        ordering = ["name", "id"]
+
 class Major(models.Model):
     name = models.CharField(max_length=150)
     main = models.ForeignKey(Subject, on_delete=models.SET_NULL, null=True, related_name="main_majors")
@@ -27,6 +30,9 @@ class Major(models.Model):
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        ordering = ["name", "id"]
 
 
 class Author(models.Model):
