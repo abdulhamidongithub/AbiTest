@@ -6,10 +6,12 @@ from rest_framework import status
 from .models import (
     Candidate,
     Subject,
+    Major,
+    Author,
     Test,
     Question,
     UserTest,
-    Result
+    UserAnswer
 )
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -46,7 +48,18 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 class CandidateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Candidate
-        fields = '__all__'
+        fields =  [
+            "id", "first_name", "last_name", 'phone', "username",
+            "balance", "region", "birth_date", "email"
+            ]
+
+class CandidateCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Candidate
+        fields = [
+            "first_name", "last_name", 'phone', "username",
+            "password", "region", "birth_date"
+            ]
 
 class SubjectSerializer(serializers.ModelSerializer):
     class Meta:
@@ -69,8 +82,7 @@ class UserTestSerializer(serializers.ModelSerializer):
         model = UserTest
         fields = '__all__'
 
-class ResultSerializer(serializers.ModelSerializer):
+class UserTestSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Result
+        model = UserTest
         fields = '__all__'
-

@@ -11,22 +11,13 @@ from .serializers import *
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
 
-class SubjectsAPIView(APIView):
-    def get(self, request):
-        subjects = Subject.objects.all()
-        serializer = SubjectSerializer(subjects, many=True)
-        return Response(serializer.data)
+class UserCreateAPIView(APIView):
+    @swagger_auto_schema(request_body=CandidateCreateSerializer)
+    def post(self, request):
+        user = request.data
+        serializer = CandidateCreateSerializer(data=user)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status.HTTP_201_CREATED)
 
-class SubjectRandomTest(APIView):
-    def get(self, request, pk):
-        tests = Test.objects.filter(subject__id=pk)
-        counter = tests.count()
-        rand_num = random.randrange(0, counter)
-        serializer = TestSerializer(tests[rand_num])
-        return Response(serializer.data)
 
-class TestQuestions(APIView):
-    def get(self, request, pk):
-        questions = Question.objects.filter(test__id=pk)
-        serializer = QuestionSerializer(questions, many=True)
-        return Response(serializer.data)

@@ -7,7 +7,6 @@ class Candidate(AbstractUser):
     balance = models.PositiveIntegerField(default=0)
     active = models.BooleanField(default=True)
     region = models.CharField(max_length=30)
-    email = None
 
     def __str__(self):
         return f"{self.username}: {self.first_name} {self.last_name}"
@@ -22,7 +21,7 @@ class Subject(models.Model):
 
 class Major(models.Model):
     name = models.CharField(max_length=150)
-    main = models.ForeignKey(Subject, on_delete=models.SET_NULL, null=True)
+    main = models.ForeignKey(Subject, on_delete=models.SET_NULL, null=True, related_name="main_majors")
     secondary = models.ForeignKey(Subject, on_delete=models.SET_NULL, null=True)
     language = models.CharField(max_length=30, default="o'zbek")
 
@@ -46,16 +45,16 @@ class Test(models.Model):
 
 class Question(models.Model):
     text = models.TextField()
-    test = models.ForeignKey(Test, on_delete=models.CASCADE, related_name="questions")
+    test = models.ForeignKey(Test, on_delete=models.CASCADE, null=True, related_name="questions")
     correct_option = models.TextField()
-    options = models.JSONField()
+    options = models.JSONField(null=True, blank=True)
 
     def __str__(self):
         return self.text
 
 
 class UserTest(models.Model):
-    candidate = models.ForeignKey(Candidate, on_delete=models.CASCADE, related_name="tests")
+    candidate = models.ForeignKey(Candidate, on_delete=models.CASCADE, related_name="tests", null=True)
     major = models.ForeignKey(Major, on_delete=models.SET_NULL, null=True)
     main_test = models.ForeignKey(Test, on_delete=models.SET_NULL, null=True, related_name="main_user_tests")
     secondary_test = models.ForeignKey(Test, on_delete=models.SET_NULL, null=True, related_name="secondary_user_tests")
