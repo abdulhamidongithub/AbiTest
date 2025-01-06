@@ -94,6 +94,11 @@ class SubjectSerializer(serializers.ModelSerializer):
         model = Subject
         fields = '__all__'
 
+class MajorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Major
+        fields = '__all__'
+
 class TestSerializer(serializers.ModelSerializer):
     class Meta:
         model = Test

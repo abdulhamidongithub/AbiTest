@@ -50,3 +50,9 @@ class UserAPIView(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
+
+class MajorsAPIView(APIView):
+    def get(self, request):
+        majors = Major.objects.all()
+        serializer = MajorSerializer(majors, many=True)
+        return Response(serializer.data)
