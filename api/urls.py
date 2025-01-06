@@ -8,6 +8,7 @@ urlpatterns = [
     path('refresh_token/', TokenRefreshView.as_view()),
     path('change_password/', ChangePasswordAPIView.as_view()),
     path('user_create/', UserCreateAPIView.as_view()),
+    path('user_details/<int:pk>/', UserAPIView.as_view()),
 
 
 ]
