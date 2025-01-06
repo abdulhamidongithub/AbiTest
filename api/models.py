@@ -48,6 +48,7 @@ class Author(models.Model):
 class Test(models.Model):
     subject = models.ForeignKey(Subject, on_delete=models.SET_NULL, null=True)
     author = models.ForeignKey(Author, on_delete=models.SET_NULL, null=True)
+    source = models.CharField(max_length=100, blank=True, null=True)
 
 class Question(models.Model):
     text = models.TextField()

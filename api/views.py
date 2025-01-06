@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
@@ -52,7 +53,13 @@ class UserAPIView(APIView):
         return Response(serializer.data)
 
 class MajorsAPIView(APIView):
+    @swagger_auto_schema(manual_parameters=[
+        openapi.Parameter('name', openapi.IN_QUERY, description="Search by name", type=openapi.TYPE_STRING)
+    ])
     def get(self, request):
+        search_name = request.query_params.get("name")
         majors = Major.objects.all()
+        if search_name:
+            majors = majors.filter(name__contains = search_name)
         serializer = MajorSerializer(majors, many=True)
         return Response(serializer.data)
