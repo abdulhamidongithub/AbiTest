@@ -60,6 +60,18 @@ class MajorsAPIView(APIView):
         search_name = request.query_params.get("name")
         majors = Major.objects.all()
         if search_name:
-            majors = majors.filter(name__contains = search_name)
+            majors = majors.filter(name__icontains = search_name)
         serializer = MajorSerializer(majors, many=True)
+        return Response(serializer.data)
+
+class SubjectsAPIView(APIView):
+    @swagger_auto_schema(manual_parameters=[
+        openapi.Parameter('name', openapi.IN_QUERY, description="Search by name", type=openapi.TYPE_STRING)
+    ])
+    def get(self, request):
+        subjects = Subject.objects.all()
+        sub_name = request.query_params.get("name")
+        if sub_name:
+            subjects = subjects.filter(name__icontains = sub_name)
+        serializer = SubjectSerializer(subjects, many=True)
         return Response(serializer.data)
