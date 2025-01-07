@@ -12,5 +12,7 @@ urlpatterns = [
 
     path("majors/", MajorsAPIView.as_view()),
     path("subjects/", SubjectsAPIView.as_view()),
+
+    path("generate_exam/<int:major_id>/", GenerateExamAPIView.as_view()),
 ]
 

@@ -50,6 +50,9 @@ class Test(models.Model):
     author = models.ForeignKey(Author, on_delete=models.SET_NULL, null=True)
     source = models.CharField(max_length=100, blank=True, null=True)
 
+    def __str__(self):
+        return f"{self.subject.name} - {self.author.name}"
+
 class Question(models.Model):
     text = models.TextField()
     test = models.ForeignKey(Test, on_delete=models.CASCADE, null=True, related_name="questions")
