@@ -112,3 +112,49 @@ class GenerateExamAPIView(APIView):
         }
         return Response(response_data, status.HTTP_200_OK)
 
+class GenerateExamBySubjects(APIView):
+    @swagger_auto_schema(manual_parameters=[
+        openapi.Parameter('main_subject_id', openapi.IN_QUERY, description="ID of the main subject", type=openapi.TYPE_INTEGER),
+        openapi.Parameter('secondary_subject_id', openapi.IN_QUERY, description="ID of the secondary subject", type=openapi.TYPE_INTEGER)
+    ])
+    def get(self, request):
+        main_subject_id = request.query_params.get('main_subject_id')
+        secondary_subject_id = request.query_params.get('secondary_subject_id')
+
+        if not main_subject_id or not secondary_subject_id:
+            return Response({"error": "Both main_subject_id and secondary_subject_id are required."},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            main_subject = Subject.objects.get(id=main_subject_id)
+            secondary_subject = Subject.objects.get(id=secondary_subject_id)
+        except Subject.DoesNotExist:
+            return Response({"error": "Invalid subject ID(s) provided."},
+                            status=status.HTTP_404_NOT_FOUND)
+
+        main_test = Test.objects.filter(subject=main_subject).order_by('?').first()
+        secondary_test = Test.objects.filter(subject=secondary_subject).order_by('?').first()
+
+        mandatory_subjects = Subject.objects.filter(is_mandatory=True)
+        mandatory_tests = []
+        for subject in mandatory_subjects:
+            test = Test.objects.filter(subject=subject).order_by('?').first()
+            if test:
+                mandatory_tests.append(test)
+
+        if not main_test or not secondary_test or len(mandatory_tests) < 3:
+            return Response({"error": "Insufficient test data for the selected subjects."},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        main_test_serializer = TestSerializer(main_test)
+        secondary_test_serializer = TestSerializer(secondary_test)
+        mandatory_tests_serializer = TestSerializer(mandatory_tests, many=True)
+
+        response_data = {
+            "main_test": main_test_serializer.data,
+            "secondary_test": secondary_test_serializer.data,
+            "mandatory_tests": mandatory_tests_serializer.data,
+        }
+        return Response(response_data, status.HTTP_200_OK)
+
+
