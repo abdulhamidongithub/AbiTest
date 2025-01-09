@@ -104,6 +104,13 @@ class TestSerializer(serializers.ModelSerializer):
         model = Test
         fields = '__all__'
 
+    def to_representation(self, instance):
+        cur_test = super(TestSerializer, self).to_representation(instance)
+        questions = Question.objects.filter(test=instance)
+        serializer = QuestionSerializer(questions, many=True)
+        cur_test['questions'] = serializer.data
+        return cur_test
+
 class QuestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Question
