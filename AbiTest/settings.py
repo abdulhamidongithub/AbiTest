@@ -33,6 +33,22 @@ INSTALLED_APPS = [
     'api',
 ]
 
+SWAGGER_SETTINGS = {
+   'SECURITY_DEFINITIONS': {
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+        }
+    }
+}
+
+"""You will have to click the green authorize button 
+in the top right and set the acces token; 
+you will have to add the Bearer prefix manually when setting the token, 
+as OpenAPI 2.0 has no support for authorization header prefixes - e.g. Bearer <token here>
+"""
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
