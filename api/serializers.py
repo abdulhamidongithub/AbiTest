@@ -116,13 +116,17 @@ class QuestionSerializer(serializers.ModelSerializer):
         model = Question
         fields = '__all__'
 
-
-class UserTestSerializer(serializers.ModelSerializer):
+class UserAnswerSerializer(serializers.ModelSerializer):
     class Meta:
-        model = UserTest
+        model = UserAnswer
         fields = '__all__'
 
 class UserTestSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserTest
-        fields = '__all__'
+        fields = ['candidate', 'major', 'main_test', 'secondary_test', 'mandatory_tests']
+
+    def create(self, validated_data):
+        return UserTest.objects.create(**validated_data)
+        
+

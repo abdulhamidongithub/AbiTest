@@ -15,5 +15,6 @@ urlpatterns = [
 
     path("generate_exam/<int:major_id>/", GenerateExamAPIView.as_view()),
     path("generate_exam_by_subjects/", GenerateExamBySubjects.as_view()),
+    path("start_the_test/", StartTest.as_view()),
 ]
 

@@ -157,4 +157,13 @@ class GenerateExamBySubjects(APIView):
         }
         return Response(response_data, status.HTTP_200_OK)
 
+class StartTest(APIView):
+    @swagger_auto_schema(request_body=UserTestSerializer)
+    def post(self, request):
+        user_test = request.data
+        serializer = UserTestSerializer(data=user_test)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status.HTTP_201_CREATED)
+
 

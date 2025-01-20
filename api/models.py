@@ -72,7 +72,7 @@ class UserTest(models.Model):
 
     main_test_points = models.FloatField(default=0.0)
     secondary_test_points = models.FloatField(default=0.0)
-    mandatory_points = models.JSONField(default=dict)
+    mandatory_points = models.JSONField(default={"matem": 0.0, "tarix": 0.0, "ingliz_tili": 0.0})
 
     total_points = models.FloatField(default=0.0)
     taken_at = models.DateTimeField(auto_now_add=True)
