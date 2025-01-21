@@ -166,7 +166,7 @@ class StartTest(APIView):
         serializer.save()
         return Response(serializer.data, status.HTTP_201_CREATED)
 
-class UserAnswersAPI(APIView):
+class UserAllAnswersAPI(APIView):
     def get(self, request, user_test_id):
         user_answers = UserAnswer.objects.filter(user_test = user_test_id)
         serializer = UserAnswerSerializer(user_answers, many=True)
@@ -179,5 +179,20 @@ class UserAnswersAPI(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status.HTTP_201_CREATED)
+
+class UserAnswerAPI(APIView):
+    def get(self, request, answer_id):
+        answer = get_object_or_404(UserAnswer.objects.all(), id=answer_id)
+        serializer = UserAnswerSerializer(answer)
+        return Response(serializer.data)
+
+    @swagger_auto_schema(request_body=UserAnswerSerializer)
+    def put(self, request, answer_id):
+        answer = get_object_or_404(UserAnswer.objects.all(), id=answer_id)
+        data = request.data
+        serializer = UserAnswerSerializer(instance=answer, data=data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status.HTTP_202_ACCEPTED)
 
 
