@@ -195,4 +195,5 @@ class UserAnswerAPI(APIView):
         serializer.save()
         return Response(serializer.data, status.HTTP_202_ACCEPTED)
 
-
+class FinishTestAPI(APIView):
+    pass

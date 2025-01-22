@@ -62,6 +62,10 @@ class Question(models.Model):
     def __str__(self):
         return self.text
 
+STATUS = [
+    ("in_progress", "in_progress"),
+    ("finished", "finished"),
+]
 
 class UserTest(models.Model):
     candidate = models.ForeignKey(Candidate, on_delete=models.CASCADE, related_name="tests", null=True)
@@ -74,6 +78,7 @@ class UserTest(models.Model):
     secondary_test_points = models.FloatField(default=0.0)
     mandatory_points = models.JSONField(default={"matem": 0.0, "tarix": 0.0, "ingliz_tili": 0.0})
 
+    status = models.CharField(max_length=30, choices=STATUS, default="in_progress")
     total_points = models.FloatField(default=0.0)
     taken_at = models.DateTimeField(auto_now_add=True)
 
