@@ -127,6 +127,21 @@ class UserTestSerializer(serializers.ModelSerializer):
         fields = ['candidate', 'major', 'main_test', 'secondary_test', 'mandatory_tests']
 
     def create(self, validated_data):
-        return UserTest.objects.create(**validated_data)
-        
+        mandatory_tests_data = validated_data.pop('mandatory_tests', [])
+        user_test = UserTest.objects.create(**validated_data)
+        user_test.mandatory_tests.set(mandatory_tests_data)
+
+        return user_test
+
+    def update(self, instance, validated_data):
+        mandatory_tests_data = validated_data.pop('mandatory_tests', None)
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        instance.save()
+
+        if mandatory_tests_data is not None:
+            instance.mandatory_tests.set(mandatory_tests_data)
+
+        return instance
 
